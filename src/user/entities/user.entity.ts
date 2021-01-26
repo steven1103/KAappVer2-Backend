@@ -23,4 +23,8 @@ export class User extends CoreEntity {
   @Field(() => Number)
   @Column()
   point: number;
+
+  @Field(() => Boolean)
+  @Column()
+  isVerified: boolean;
 }
