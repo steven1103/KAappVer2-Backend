@@ -4,11 +4,16 @@ import { MutationOutPut } from 'src/core/entity/core.output';
 import { User } from '../entities/user.entity';
 
 @InputType()
-export class CreateAccountInput extends PickType(User, [
-  'email',
-  'password',
-  'username',
-]) {}
+export class CreateAccountInput {
+  @Field(() => String)
+  email: string;
+
+  @Field(() => String)
+  password: string;
+
+  @Field(() => String)
+  username: string;
+}
 
 @ObjectType()
 export class createAccountOutput extends MutationOutPut {}

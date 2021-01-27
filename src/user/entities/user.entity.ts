@@ -52,9 +52,14 @@ export class User extends CoreEntity {
 }
 
 @InputType()
-export class LoginInput extends PickType(User, ['email', 'password']) {
-  @Field()
-  optional?: number;
+export class LoginInput {
+  @Field(() => String)
+  @Column()
+  email: string;
+
+  @Field(() => String)
+  @Column()
+  password: string;
 }
 
 @ObjectType()
