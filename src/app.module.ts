@@ -39,6 +39,10 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
       privateKey: process.env.SECRET_KEY,
     }),
     QuestionModule,
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+      // 나중에 context도 해야함 ( 유저 데코레이터 접근 필요 )
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,44 +14,26 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async createUser({ username, email, password }): Promise<CoreOutput> {
-    const existEmail = await this.users.findOne({ email });
-    const existUsername = await this.users.findOne({ username });
-    if (existEmail || existUsername) {
-      return {
-        ok: false,
-        error:
-          'Email or Username already taken \n 이메일 혹은 아이디가 이미 사용중입니다',
-      };
-    }
+  async updateUser({
+    username,
+    email,
+    password,
+    isVerified,
+  }: UpdateUserInput): Promise<CoreOutput> {
     try {
-      await this.users.save(
-        this.users.create({
-          username,
-          email,
-          password,
-          point: 0,
-          isVerified: false,
-        }),
-      );
-    } catch (e) {
-      return {
-        ok: false,
-        error: e,
-      };
-    }
-  }
-
-  async updateUser(
-    userId: number,
-    { username, email, password, isVerified }: UpdateUserInput,
-  ): Promise<CoreOutput> {
-    try {
-      this.users.update(userId, { username, email, password, isVerified });
-      return {
-        ok: true,
-        error: null,
-      };
+      const user = await this.users.findOne({ email });
+      try {
+        this.users.update(user, { username, email, password, isVerified });
+        return {
+          ok: true,
+          error: null,
+        };
+      } catch (error) {
+        return {
+          ok: false,
+          error,
+        };
+      }
     } catch (error) {
       return {
         ok: false,
@@ -77,7 +59,7 @@ export class UserService {
     }
   }
 
-  async getUser({ username }): Promise<{ user?: User; ok: boolean }> {
+  async getUser(username: string): Promise<{ user?: User; ok: boolean }> {
     const exist = await this.users.findOne({ username });
     if (!exist) {
       return {
@@ -90,7 +72,7 @@ export class UserService {
     };
   }
 
-  async deleteUser({ id }): Promise<CoreOutput> {
+  async deleteUser(id: number): Promise<CoreOutput> {
     const user = await this.users.find({ id });
     if (!user) {
       try {
@@ -166,6 +148,34 @@ export class UserService {
       return {
         ok: false,
         error,
+      };
+    }
+  }
+
+  async createUser({ username, email, password }): Promise<CoreOutput> {
+    const existEmail = await this.users.findOne({ email });
+    const existUsername = await this.users.findOne({ username });
+    if (existEmail || existUsername) {
+      return {
+        ok: false,
+        error:
+          'Email or Username already taken \n 이메일 혹은 아이디가 이미 사용중입니다',
+      };
+    }
+    try {
+      await this.users.save(
+        this.users.create({
+          username,
+          email,
+          password,
+          point: 0,
+          isVerified: false,
+        }),
+      );
+    } catch (e) {
+      return {
+        ok: false,
+        error: e,
       };
     }
   }

@@ -52,7 +52,10 @@ export class User extends CoreEntity {
 }
 
 @InputType()
-export class LoginInput extends PickType(User, ['email', 'password']) {}
+export class LoginInput extends PickType(User, ['email', 'password']) {
+  @Field()
+  optional?: number;
+}
 
 @ObjectType()
 export class LoginOutput extends MutationOutPut {
