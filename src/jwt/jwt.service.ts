@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { Inject, Injectable } from '@nestjs/common';
+import * as jwt from 'jsonwebtoken';
 import { JwtModuleOptions } from './jwt.interfaces';
 import { CONFIG_OPTIONS } from './jwt.constants';
-import * as jwt from 'jsonwebtoken';
+
 @Injectable()
 export class JwtService {
   constructor(
@@ -11,8 +11,7 @@ export class JwtService {
   sign(userId: number): string {
     return jwt.sign({ id: userId }, this.options.privateKey);
   }
-
-  verify(token: string): any {
+  verify(token: string) {
     return jwt.verify(token, this.options.privateKey);
   }
 }

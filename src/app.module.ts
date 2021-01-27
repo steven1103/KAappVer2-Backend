@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +14,7 @@ import { UserModule } from './user/user.module';
 import { EmailModule } from './email/email.module';
 import { JwtModule } from './jwt/jwt.module';
 import { QuestionModule } from './question/question.module';
+import { JwtMiddleware } from './jwt/jwt.middleware';
 
 @Module({
   imports: [
@@ -29,15 +35,21 @@ import { QuestionModule } from './question/question.module';
       entities: [User],
     }),
     EmailModule,
-    JwtModule,
+    JwtModule.forRoot({
+      privateKey: process.env.SECRET_KEY,
+    }),
     QuestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
-console.log(process.env.DB_HOST);
-
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware)
+      .forRoutes({ path: '/graphql', method: RequestMethod.ALL });
+  }
+}
 /*
 GraphQLModule.forRoot({
       autoSchemaFile: true,

@@ -3,6 +3,7 @@ import { CoreEntity } from 'src/core/entity/core.entity';
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
+import { MutationOutPut } from 'src/core/entity/core.output';
 @Entity()
 @ObjectType()
 export class User extends CoreEntity {
@@ -52,3 +53,9 @@ export class User extends CoreEntity {
 
 @InputType()
 export class LoginInput extends PickType(User, ['email', 'password']) {}
+
+@ObjectType()
+export class LoginOutput extends MutationOutPut {
+  @Field((type) => String, { nullable: true })
+  token?: string;
+}
