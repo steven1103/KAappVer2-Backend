@@ -1,7 +1,8 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreEntity } from 'src/core/entity/core.entity';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { InternalServerErrorException } from '@nestjs/common';
 @Entity()
 @ObjectType()
 export class User extends CoreEntity {
@@ -27,4 +28,27 @@ export class User extends CoreEntity {
   @Field(() => Boolean)
   @Column()
   isVerified: boolean;
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    try {
+      this.password = await bcrypt.hash(this.password, 10);
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async checkPassword(aPassword: string): Promise<boolean> {
+    try {
+      const ok = await bcrypt.compare(aPassword, this.password);
+      return ok;
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
 }
+
+@InputType()
+export class LoginInput extends PickType(User, ['email', 'password']) {}

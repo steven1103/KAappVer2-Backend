@@ -6,6 +6,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
+import { EmailModule } from './email/email.module';
+import { JwtModule } from './jwt/jwt.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { UserModule } from './user/user.module';
       logging: true,
       entities: [User],
     }),
+    EmailModule,
+    JwtModule,
+    QuestionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

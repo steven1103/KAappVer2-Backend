@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreOutput } from 'src/core/output/core.output';
+import { JwtService } from 'src/jwt/jwt.service';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { LoginInput, User } from './entities/user.entity';
 import { UpdateUserInput } from './entities/user.service.entity';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly users: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async createUser({ username, email, password }): Promise<CoreOutput> {
@@ -110,8 +112,8 @@ export class UserService {
     function NumberCompare(a, b) {
       return b.point - a.point;
     }
-    const everyUser = this.users.find();
-    const sortedUser = (await everyUser).sort(NumberCompare);
+    const everyUser = await this.users.find();
+    const sortedUser = everyUser.sort(NumberCompare);
     const topTwentyUser = [];
     for (let i = 0; i < sortedUser.length; i++) {
       if (i >= 20) {
@@ -128,5 +130,43 @@ export class UserService {
       );
     }
     return topTwentyUser;
+  }
+
+  async findById(id: number): Promise<User> {
+    return this.users.findOne({
+      id,
+    });
+  }
+
+  async login({
+    email,
+    password,
+  }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
+    try {
+      const user = await this.users.findOne({ email });
+      if (!user) {
+        return {
+          ok: false,
+          error: 'User not Found',
+        };
+      }
+      const passwordCorrect = await user.checkPassword(password);
+      if (!passwordCorrect) {
+        return {
+          ok: false,
+          error: '비밀번호 불일치',
+        };
+      }
+      const token = this.jwtService.sign(user.id);
+      return {
+        ok: true,
+        token,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 }
