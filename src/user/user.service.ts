@@ -5,6 +5,7 @@ import { JwtService } from 'src/jwt/jwt.service';
 import { Repository } from 'typeorm';
 import { LoginInput, User } from './entities/user.entity';
 import { UpdateUserInput } from './entities/user.service.entity';
+import * as CloudinaryLib from 'cloudinary';
 
 @Injectable()
 export class UserService {
@@ -176,6 +177,28 @@ export class UserService {
       return {
         ok: false,
         error: e,
+      };
+    }
+  }
+
+  async upload(file: any): Promise<CoreOutput> {
+    const cloud = CloudinaryLib.v2;
+    const newFile = cloud.image('sample', {
+      crop: 'fill',
+      width: 420,
+      height: 210,
+      format: 'jpg',
+    });
+    try {
+      await cloud.uploader.upload(newFile);
+      return {
+        ok: true,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
       };
     }
   }

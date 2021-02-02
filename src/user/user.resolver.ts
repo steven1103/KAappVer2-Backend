@@ -62,6 +62,13 @@ export class UserResolver {
     return this.userService.getUser(username);
   }
 
+  @Mutation((returns) => CoreOutput)
+  async upload(
+    @Args({ name: 'file', type: () => Image }) file: any,
+  ): Promise<{ user?: User; ok: boolean }> {
+    return this.userService.upload(file);
+  }
+
   @Query(returns => [User])
   async rankUser(): Promise<Array<User>> {
     return this.userService.rankUser();
