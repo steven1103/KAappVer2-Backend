@@ -11,6 +11,7 @@ import { UpdateUserInput } from './entities/user.service.entity';
 import { UserService } from './user.service';
 import { GraphQLUpload } from 'apollo-server-express';
 import { createWriteStream } from 'fs';
+import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
 
 @Resolver((of) => User)
 export class UserResolver {
@@ -66,10 +67,10 @@ export class UserResolver {
   @Mutation(() => CoreOutput)
   async uploadFile(
     @Args({ name: 'file', type: () => GraphQLUpload })
-     file: any ,
+    file: any,
   ): Promise<CoreOutput> {
     try {
-      this.userService.upload(file)
+      this.userService.upload(file);
     } catch (error) {
       return {
         ok: false,
@@ -96,5 +97,10 @@ export class UserResolver {
     @Args({ name: 'userID', type: () => String }) userID: number,
   ): Promise<CoreOutput> {
     return this.userService.deleteUser(userID);
+  }
+
+  @Mutation((returns) => VerifyEmailOutput)
+  verifyEmail(@Args('input') verifyEmailInput: VerifyEmailInput) {
+    this.userService.verifyEmail(verifyEmailInput.code)
   }
 }

@@ -16,6 +16,7 @@ export class UserService {
     private readonly users: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    @InjectRepository(Verification)
     private readonly verify: Repository<Verification>,
   ) {}
 
@@ -178,6 +179,10 @@ export class UserService {
         }),
       );
       await this.verify.save(this.verify.create({ user }));
+      return {
+        ok: true,
+        error: null,
+      };
     } catch (e) {
       return {
         ok: false,
@@ -210,6 +215,22 @@ export class UserService {
         ok: false,
         error,
       };
+    }
+  }
+
+  async verifyEmail(code: string): Promise<boolean> {
+    try {
+      const verification = await this.verify.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (verification) {
+        verification.user.isVerified = true;
+        this.users.save(verification.user);
+        return true;
+      }
+    } catch (error) {
+      return false;
     }
   }
 }
