@@ -7,6 +7,7 @@ import { LoginInput, User } from './entities/user.entity';
 import { UpdateUserInput } from './entities/user.service.entity';
 import * as CloudinaryLib from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
+import { Verification } from './entities/verification.entity';
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,7 @@ export class UserService {
     private readonly users: Repository<User>,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    private readonly verify: Repository<Verification>,
   ) {}
 
   async updateUser({
@@ -166,7 +168,7 @@ export class UserService {
       };
     }
     try {
-      await this.users.save(
+      const user = await this.users.save(
         this.users.create({
           username,
           email,
@@ -175,6 +177,7 @@ export class UserService {
           isVerified: false,
         }),
       );
+      await this.verify.save(this.verify.create({ user }));
     } catch (e) {
       return {
         ok: false,

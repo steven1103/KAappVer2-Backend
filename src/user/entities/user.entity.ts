@@ -27,7 +27,7 @@ export class User extends CoreEntity {
   point: number;
 
   @Field(() => Boolean)
-  @Column()
+  @Column({ default: false })
   isVerified: boolean;
 
   @BeforeInsert()
