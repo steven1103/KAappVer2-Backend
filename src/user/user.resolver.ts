@@ -9,12 +9,13 @@ import { CreateAccountInput, createAccountOutput } from './dtos/user.dto';
 import { LoginInput, LoginOutput, User } from './entities/user.entity';
 import { UpdateUserInput } from './entities/user.service.entity';
 import { UserService } from './user.service';
+import { GraphQLUpload } from 'apollo-server-express';
+import { createWriteStream } from 'fs';
 
 @Resolver((of) => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  
   @Mutation((returns) => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
     try {
@@ -26,7 +27,7 @@ export class UserResolver {
       };
     }
   }
-  
+
   @Mutation((returns) => CoreOutput)
   async createAccount(
     @Args('input') createAccountInput: CreateAccountInput,
@@ -62,14 +63,22 @@ export class UserResolver {
     return this.userService.getUser(username);
   }
 
-  @Mutation((returns) => CoreOutput)
-  async upload(
-    @Args({ name: 'file', type: () => Image }) file: any,
-  ): Promise<{ user?: User; ok: boolean }> {
-    return this.userService.upload(file);
+  @Mutation(() => CoreOutput)
+  async uploadFile(
+    @Args({ name: 'file', type: () => GraphQLUpload })
+     file: any ,
+  ): Promise<CoreOutput> {
+    try {
+      this.userService.upload(file)
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 
-  @Query(returns => [User])
+  @Query((returns) => [User])
   async rankUser(): Promise<Array<User>> {
     return this.userService.rankUser();
   }

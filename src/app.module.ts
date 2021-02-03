@@ -11,11 +11,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './user/entities/user.entity';
 import { UserModule } from './user/user.module';
-import { EmailModule } from './email/email.module';
 import { JwtModule } from './jwt/jwt.module';
 import { QuestionModule } from './question/question.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { Question } from './question/entities/question.entitiy';
+import { Verification } from './user/entities/verification.entity';
 
 @Module({
   imports: [
@@ -33,9 +33,8 @@ import { Question } from './question/entities/question.entitiy';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: true,
-      entities: [User, Question],
+      entities: [User, Question, Verification],
     }),
-    EmailModule,
     JwtModule.forRoot({
       privateKey: process.env.SECRET_KEY,
     }),

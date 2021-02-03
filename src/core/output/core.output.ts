@@ -2,9 +2,9 @@ import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
 export class CoreOutput {
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   error?: string;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   ok: boolean;
 }

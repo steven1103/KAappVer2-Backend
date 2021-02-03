@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { LoginInput, User } from './entities/user.entity';
 import { UpdateUserInput } from './entities/user.service.entity';
 import * as CloudinaryLib from 'cloudinary';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly users: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly config: ConfigService,
   ) {}
 
   async updateUser({
@@ -183,6 +185,11 @@ export class UserService {
 
   async upload(file: any): Promise<CoreOutput> {
     const cloud = CloudinaryLib.v2;
+    cloud.config({
+      cloud_name: this.config.get('CLOUD_NAME'),
+      api_key: this.config.get('API_KEY'),
+      api_secret: this.config.get('API_SECRET'),
+    });
     const newFile = cloud.image('sample', {
       crop: 'fill',
       width: 420,
