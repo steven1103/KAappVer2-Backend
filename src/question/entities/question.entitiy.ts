@@ -9,6 +9,7 @@ enum Grade {
 }
 
 registerEnumType(Grade, { name: 'Grade' });
+
 @Entity()
 @ObjectType()
 export class Question extends CoreEntity {
@@ -16,11 +17,15 @@ export class Question extends CoreEntity {
   @Column()
   grade: Grade;
 
-  @Field(() => String)
+  @Field(() => [String])
+  @Column('text', { array: true })
+  choices: string[];
+
+  @Field(() => Number)
   @Column()
-  chapter: string;
+  answer: number;
 
   @Field(() => String)
   @Column()
-  image: string;
+  question: string;
 }
