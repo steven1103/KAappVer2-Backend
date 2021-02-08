@@ -131,7 +131,10 @@ export class UserService {
     password,
   }: LoginInput): Promise<{ ok: boolean; error?: string; token?: string }> {
     try {
-      const user = await this.users.findOne({ email });
+      const user = await this.users.findOne(
+        { email },
+        { select: ['password'] },
+      );
       if (!user) {
         return {
           ok: false,
@@ -226,10 +229,14 @@ export class UserService {
       );
       if (verification) {
         verification.user.isVerified = true;
-        this.users.save(verification.user);
+        console.log(verification.user);
+        await this.users.save(verification.user);
+        await this.verify.delete(verification.id);
         return true;
       }
-    } catch (error) {
+      throw new Error();
+    } catch (e) {
+      console.log(e);
       return false;
     }
   }

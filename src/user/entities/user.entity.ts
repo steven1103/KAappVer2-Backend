@@ -4,6 +4,8 @@ import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { MutationOutPut } from 'src/core/entity/core.output';
+import { UserRecord } from './user-record.entity';
+import { UserResolver } from '../user.resolver';
 @Entity()
 @ObjectType()
 export class User extends CoreEntity {

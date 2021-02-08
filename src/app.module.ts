@@ -16,6 +16,8 @@ import { QuestionModule } from './question/question.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { Question } from './question/entities/question.entitiy';
 import { Verification } from './user/entities/verification.entity';
+import { SeriesModule } from './series/series.module';
+import { UserRecord } from './user/entities/user-record.entity';
 
 @Module({
   imports: [
@@ -33,7 +35,7 @@ import { Verification } from './user/entities/verification.entity';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: true,
-      entities: [User, Question, Verification],
+      entities: [User, Question, Verification, UserRecord],
     }),
     JwtModule.forRoot({
       privateKey: process.env.SECRET_KEY,
@@ -43,6 +45,7 @@ import { Verification } from './user/entities/verification.entity';
       autoSchemaFile: true,
       // 나중에 context도 해야함 ( 유저 데코레이터 접근 필요 )
     }),
+    SeriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
