@@ -29,3 +29,12 @@ export class Question extends CoreEntity {
   @Column()
   question: string;
 }
+
+@ObjectType()
+export class checkAnswerOutput {
+  @Field((type) => String, { nullable: true })
+  error?: string;
+
+  @Field((type) => Boolean)
+  isCorrect?: boolean;
+}
